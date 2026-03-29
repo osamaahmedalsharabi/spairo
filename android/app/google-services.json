@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "962906869863",
+    "project_id": "spairo-d2511",
+    "storage_bucket": "spairo-d2511.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:962906869863:android:501338efb4cfe67c9884c2",
+        "android_client_info": {
+          "package_name": "com.example.sparioapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmxkAaxTV0C_UWGNW-30Y4tSwvoqcua-k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

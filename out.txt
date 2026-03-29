@@ -1,0 +1,5 @@
+﻿Analyzing drawer_widget.dart...                                 
+
+   info - The import of 'package:skeletonizer/skeletonizer.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\feature\user_feature\home\presentation\view\widgets\drawer_widget.dart:13:8 - unnecessary_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\feature\user_feature\home\presentation\view\widgets\drawer_widget.dart:76:46 - deprecated_member_use
+
