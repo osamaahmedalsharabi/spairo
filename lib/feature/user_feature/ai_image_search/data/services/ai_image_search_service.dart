@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class AiImageSearchService {
-  static const _apiKey = 'AIzaSyAsJwuDyQeZF7TdtZpsMJElvEn0GqXQv-c';
+  static const _apiKey = '';
 
   static const _systemPrompt = '''
 أنت خبير في قطع غيار السيارات.
@@ -54,6 +54,7 @@ class AiImageSearchService {
       throw Exception('فشل في تحليل الصورة: ${e.toString()}');
     }
   }
+
   Future<Uint8List?> _downloadImage(String url) async {
     try {
       final request = await HttpClient().getUrl(Uri.parse(url));
@@ -69,7 +70,10 @@ class AiImageSearchService {
     }
   }
 
-  Future<List<String>> matchWithImages(File userImage, Map<String, String> candidateImages) async {
+  Future<List<String>> matchWithImages(
+    File userImage,
+    Map<String, String> candidateImages,
+  ) async {
     try {
       final userImageBytes = await userImage.readAsBytes();
       final userImagePart = DataPart('image/jpeg', userImageBytes);
@@ -77,18 +81,23 @@ class AiImageSearchService {
       final List<Part> parts = [
         TextPart('هذه صورة القطعة التي يريدها المستخدم (صورة المستخدم):'),
         userImagePart,
-        TextPart('الآن سأعرض عليك مجموعة من المنتجات المتاحة لدينا، كل منتج يسبقه مفتاح ID الخاص به ومتبوعاً بصورته. مهمتك: حدد ما هو المنتج الذي يظهر في صورة المستخدم. ابحث عن أي منتج بشبه صورة المستخدم أو يطابقها. أرجع الجواب كمصفوفة JSON تحتوي فقط على معرفات ID للمنتجات المطابقة بصرياً. مثال: [ "id1" ]. وإذا لم يكن هناك تطابق أرجع []. الرد يجب أن يكون JSON فقط:')
+        TextPart(
+          'الآن سأعرض عليك مجموعة من المنتجات المتاحة لدينا، كل منتج يسبقه مفتاح ID الخاص به ومتبوعاً بصورته. مهمتك: حدد ما هو المنتج الذي يظهر في صورة المستخدم. ابحث عن أي منتج بشبه صورة المستخدم أو يطابقها. أرجع الجواب كمصفوفة JSON تحتوي فقط على معرفات ID للمنتجات المطابقة بصرياً. مثال: [ "id1" ]. وإذا لم يكن هناك تطابق أرجع []. الرد يجب أن يكون JSON فقط:',
+        ),
       ];
 
       // Download images concurrently for speed and robustness
-      final List<Future<MapEntry<String, Uint8List?>>> futures = candidateImages.entries.map((entry) async {
-         if (entry.value.isEmpty) return MapEntry(entry.key, null);
-         final bytes = await _downloadImage(entry.value);
-         return MapEntry(entry.key, bytes);
-      }).toList();
+      final List<Future<MapEntry<String, Uint8List?>>> futures = candidateImages
+          .entries
+          .map((entry) async {
+            if (entry.value.isEmpty) return MapEntry(entry.key, null);
+            final bytes = await _downloadImage(entry.value);
+            return MapEntry(entry.key, bytes);
+          })
+          .toList();
 
       final results = await Future.wait(futures);
-      
+
       for (var result in results) {
         if (result.value != null) {
           parts.add(TextPart('ID: ${result.key}'));
@@ -98,8 +107,11 @@ class AiImageSearchService {
 
       final response = await _model.generateContent([Content.multi(parts)]);
       final text = response.text ?? '[]';
-      
-      String jsonStr = text.replaceAll('```json', '').replaceAll('```', '').trim();
+
+      String jsonStr = text
+          .replaceAll('```json', '')
+          .replaceAll('```', '')
+          .trim();
       int startIndex = jsonStr.indexOf('[');
       int endIndex = jsonStr.lastIndexOf(']');
       if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {

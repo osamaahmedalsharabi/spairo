@@ -1,7 +1,7 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class AiChatService {
-  static const _apiKey = 'AIzaSyAsJwuDyQeZF7TdtZpsMJElvEn0GqXQv-c';
+  static const _apiKey = '';
 
   static const _systemPrompt = '''
 أنت مساعد ذكي لتطبيق Spairo لقطع غيار السيارات.

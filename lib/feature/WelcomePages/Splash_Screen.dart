@@ -45,7 +45,7 @@ class _SplashPageState extends State<SplashPage>
           CurvedAnimation(parent: _controller, curve: const Interval(0.6, 1.0)),
         );
 
-    // التحقق من حالة الدخول السابقة بعد 3 ثواني
+    // التحقق من حالة الدخول السابقة بعد 4 ثواني
     Future.delayed(const Duration(seconds: 4), () async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
@@ -55,12 +55,22 @@ class _SplashPageState extends State<SplashPage>
           await prefs.setBool('isFirstTime', false);
           context.go('/welcome1');
         } else {
-          final authRepo = sl.get<AuthRepo>();
-          final authStatus = await authRepo.checkAuthStatus();
-          authStatus.fold(
-            (failure) => context.go('/login'), // If error or guest
-            (user) => context.go('/userHome'), // If account is valid & active
-          );
+          try {
+            final authRepo = sl.get<AuthRepo>();
+            // Timeout of 5 seconds to avoid freezing in release mode
+            final authStatus = await authRepo
+                .checkAuthStatus()
+                .timeout(const Duration(seconds: 5));
+            if (mounted) {
+              authStatus.fold(
+                (failure) => context.go('/login'),
+                (user) => context.go('/userHome'),
+              );
+            }
+          } catch (_) {
+            // On timeout or any error, go to login safely
+            if (mounted) context.go('/login');
+          }
         }
       }
     });

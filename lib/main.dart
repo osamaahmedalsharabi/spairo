@@ -26,14 +26,14 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('userBox');
   await di.init();
-  
-  // Initialize FCM
-  await di.sl.get<FCMService>().initialize();
-  
+
   // Initialize timeago Arabic locale
   timeago.setLocaleMessages('ar', timeago.ArMessages());
-  
+
   runApp(const SpairoApp());
+
+  // Initialize FCM after runApp so it doesn't block the splash screen
+  di.sl.get<FCMService>().initialize();
 }
 
 class SpairoApp extends StatelessWidget {
