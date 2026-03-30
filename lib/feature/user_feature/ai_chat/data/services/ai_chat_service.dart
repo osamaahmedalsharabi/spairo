@@ -31,9 +31,7 @@ class AiChatService {
   }
 
   Future<String> sendMessage(String message) async {
-    final response = await _chat.sendMessage(
-      Content.text(message),
-    );
+    final response = await _chat.sendMessage(Content.text(message));
     return response.text ?? 'عذراً، لم أتمكن من الرد.';
   }
 

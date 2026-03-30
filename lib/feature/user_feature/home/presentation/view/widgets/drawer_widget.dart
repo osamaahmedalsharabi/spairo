@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sparioapp/Core/Theme/app_colors.dart';
 import 'package:sparioapp/feature/Authantication/presentation/cubit/auth_cubit.dart';
 import 'package:sparioapp/feature/Authantication/presentation/cubit/auth_state.dart';
@@ -380,9 +381,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                               icon: Icons.admin_panel_settings,
                               onTap: () {
                                 Navigator.pop(context);
-                                context.pushNamed(
-                                  AppRouteConst.adminDashboard,
-                                );
+                                context.pushNamed(AppRouteConst.adminDashboard);
                               },
                             ),
                           DrawerListTileWidget(
@@ -390,6 +389,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                             icon: Icons.share,
                             onTap: () {
                               Navigator.pop(context);
+                              Share.share(
+                                'حمّل تطبيق Spairo لأفضل تجربة في عالم قطع غيار السيارات!\n\nhttps://play.google.com/store/apps/details?id=com.spairo.app',
+                              );
                             },
                           ),
                           DrawerListTileWidget(
@@ -397,6 +399,26 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                             icon: Icons.info,
                             onTap: () {
                               Navigator.pop(context);
+                              showAboutDialog(
+                                context: context,
+                                applicationIcon: Image.asset(
+                                  'assets/logo-spairo.png',
+                                  width: 50,
+                                  height: 50,
+                                ),
+                                applicationName: 'Spairo',
+                                applicationVersion: '1.0.0',
+                                applicationLegalese:
+                                    '© 2026 Spairo.\nجميع الحقوق محفوظة.',
+                                children: [
+                                  const SizedBox(height: 20),
+                                  const Text(
+                                    'تطبيق Spairo هو منصتك المتكاملة والموثوقة لتجارة قطع غيار السيارات.\n\nنهدف لتسهيل تجربة العناية بسيارتك من خلال توفير تقنيات الذكاء الاصطناعي المتقدمة؛ حيث يمكنك البحث عن القطع التي تحتاجها بمجرد تصويرها، أو من خلال التحدث مع المساعد الذكي، لضمان حصولك على القطعة الصحيحة بكل سهولة ودقة وفي وقت قياسي.',
+                                    style: TextStyle(fontSize: 14, height: 1.6),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              );
                             },
                           ),
                           DrawerListTileWidget(
@@ -404,6 +426,14 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                             icon: Icons.privacy_tip,
                             onTap: () {
                               Navigator.pop(context);
+                              CustomAlertDialogWidget.show(
+                                context: context,
+                                title: "سياسة الخصوصية",
+                                content:
+                                    "هنالك العديد من الأنواع المتوفرة لنصوص لوريم إيبسوم، ولكن الغالبية تم تعديلها بشكل ما عبر إدخال بعض النوادر أو الكلمات العشوائية إلى النص. إن كنت تريد أن تستخدم نص لوريم إيبسوم ما، عليك أن تتحقق أولاً أن ليس هناك أي كلمات أو عبارات محرجة أو غير لائقة مخبأة في هذا النص \n هنالك العديد من الأنواع المتوفرة لنصوص لوريم إيبسوم، ولكن الغالبية تم تعديلها بشكل ما عبر إدخال بعض النوادر أو الكلمات العشوائية إلى النص. إن كنت تريد أن تستخدم نص لوريم إيبسوم ما، عليك أن تتحقق أولاً أن ليس هناك أي كلمات أو عبارات محرجة أو غير لائقة مخبأة في هذا النص \n هنالك العديد من الأنواع المتوفرة لنصوص لوريم إيبسوم، ولكن الغالبية تم تعديلها بشكل ما عبر إدخال بعض النوادر أو الكلمات العشوائية إلى النص.  \n هنالك العديد من الأنواع المتوفرة لنصوص لوريم إيبسوم، ولكن الغالبية تم تعديلها بشكل ما عبر إدخال بعض النوادر أو الكلمات العشوائية إلى النص. إن كنت تريد أن تستخدم نص لوريم إيبسوم ما، عليك أن تتحقق أولاً أن ليس هناك أي كلمات أو عبارات محرجة أو غير لائقة مخبأة في هذا النص \n هنالك العديد من الأنواع المتوفرة لنصوص لوريم إيبسوم، ولكن الغالبية تم تعديلها بشكل ما عبر إدخال بعض النوادر أو الكلمات العشوائية إلى النص. إن كنت تريد أن تستخدم نص لوريم إيبسوم ما، عليك أن تتحقق أولاً أن ليس هناك أي كلمات أو عبارات محرجة أو غير لائقة مخبأة في هذا النص",
+                                primaryButtonText: "موافق",
+                                icon: Icons.privacy_tip,
+                              );
                             },
                           ),
                           DrawerListTileWidget(
@@ -419,6 +449,19 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                             icon: Icons.settings,
                             onTap: () {
                               Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'صفحة الإعدادات قيد التطوير',
+                                    style: TextStyle(
+                                      fontFamily: 'Cairo',
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  backgroundColor: AppColors.primary,
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
                             },
                           ),
                           const Divider(),
