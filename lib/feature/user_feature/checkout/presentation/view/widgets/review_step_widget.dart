@@ -40,8 +40,8 @@ class ReviewStepWidget extends StatelessWidget {
           _EditableSection(
             title: 'وسيلة الدفع',
             value: data.paymentMethod ?? 'غير محدد',
-            subtitle: data.cardNumber.length >= 4
-                ? '•••• •••• •••• ${data.cardNumber.substring(data.cardNumber.length - 4)}'
+            subtitle: data.referenceNumber.isNotEmpty 
+                ? 'الرقم المرجعي: ${data.referenceNumber}' 
                 : '',
             onEdit: onEditPayment,
           ),

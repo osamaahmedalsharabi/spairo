@@ -70,4 +70,22 @@ class FilteredProductsCubit extends Cubit<FilteredProductsState> {
       },
     );
   }
+
+  Future<void> getCompatibleParts({
+    required String carName,
+    required String year,
+  }) async {
+    emit(FilteredProductsLoading());
+    final result = await _productsRepo.getProductsByCarName(carName);
+    result.fold(
+      (failure) => emit(FilteredProductsFailure(message: failure)),
+      (products) {
+        final filtered = products.where((p) {
+          return p.modelYear == year;
+        }).toList();
+        
+        emit(FilteredProductsSuccess(products: filtered));
+      },
+    );
+  }
 }

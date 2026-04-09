@@ -61,134 +61,138 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       return Column(
                         children: [
                           DrawerHeader(
+                            padding: EdgeInsets.zero,
                             decoration: BoxDecoration(
                               color: AppColors.white.withAlpha(80),
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 25,
-                                      backgroundColor: AppColors.primary
-                                          .withOpacity(0.2),
-                                      child: const Icon(
-                                        Icons.person,
-                                        size: 35,
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            displayUser.name,
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(
-                                            displayUser.userType,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        if (!displayUser.isActive) {
-                                          CustomAlertDialogWidget.show(
-                                            context: context,
-                                            title: "تنبيه",
-                                            content:
-                                                "سوف يتم مراجعة حسابك قريبا لكي تتمكن من استخدام الميزة او يمكنك التواصل مع إدارة التطبيق",
-                                            primaryButtonText: "حسنا",
-                                            secondaryButtonText:
-                                                "تواصل مع الإدارة",
-                                            icon: Icons.info_outline,
-                                            onSecondaryPressed: () {
-                                              showContactManagementBottomSheet(
-                                                context,
-                                              );
-                                            },
-                                          );
-                                        }
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 5,
-                                          vertical: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 25,
+                                        backgroundColor: AppColors.primary
+                                            .withOpacity(0.2),
+                                        child: const Icon(
+                                          Icons.person,
+                                          size: 35,
+                                          color: AppColors.primary,
                                         ),
-                                        decoration: BoxDecoration(
-                                          color: displayUser.isActive
-                                              ? Colors.green.withAlpha(80)
-                                              : Colors.red.withAlpha(80),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              displayUser.name,
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Text(
+                                              displayUser.userType,
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          if (!displayUser.isActive) {
+                                            CustomAlertDialogWidget.show(
+                                              context: context,
+                                              title: "تنبيه",
+                                              content:
+                                                  "سوف يتم مراجعة حسابك قريبا لكي تتمكن من استخدام الميزة او يمكنك التواصل مع إدارة التطبيق",
+                                              primaryButtonText: "حسنا",
+                                              secondaryButtonText:
+                                                  "تواصل مع الإدارة",
+                                              icon: Icons.info_outline,
+                                              onSecondaryPressed: () {
+                                                showContactManagementBottomSheet(
+                                                  context,
+                                                );
+                                              },
+                                            );
+                                          }
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 5,
+                                            vertical: 2,
                                           ),
-                                          border: Border.all(
+                                          decoration: BoxDecoration(
                                             color: displayUser.isActive
-                                                ? Colors.green
-                                                : Colors.red,
-                                            style: BorderStyle.solid,
-                                            width: 1,
+                                                ? Colors.green.withAlpha(80)
+                                                : Colors.red.withAlpha(80),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color: displayUser.isActive
+                                                  ? Colors.green
+                                                  : Colors.red,
+                                              style: BorderStyle.solid,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            displayUser.isActive
+                                                ? " نشط"
+                                                : " غير نشط",
                                           ),
                                         ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.email,
+                                        size: 16,
+                                        color: Colors.grey,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
                                         child: Text(
-                                          displayUser.isActive
-                                              ? " نشط"
-                                              : " غير نشط",
+                                          displayUser.email,
+                                          style: const TextStyle(fontSize: 14),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.email,
-                                      size: 16,
-                                      color: Colors.grey,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        displayUser.email,
-                                        style: const TextStyle(fontSize: 14),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.phone,
+                                        size: 16,
+                                        color: Colors.grey,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.phone,
-                                      size: 16,
-                                      color: Colors.grey,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      displayUser.phone,
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        displayUser.phone,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -384,6 +388,18 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                 context.pushNamed(AppRouteConst.adminDashboard);
                               },
                             ),
+                          DrawerListTileWidget(
+                            title: "الملف الشخصي ",
+                            icon: Icons.person,
+                            onTap: () {
+                              Navigator.pop(context);
+                              context.pushNamed(
+                                AppRouteConst.profile,
+                                extra: displayUser,
+                              );
+                            },
+                          ),
+
                           DrawerListTileWidget(
                             title: 'مشاركة التطبيق',
                             icon: Icons.share,

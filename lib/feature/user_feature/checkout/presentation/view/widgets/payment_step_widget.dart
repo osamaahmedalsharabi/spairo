@@ -11,9 +11,7 @@ class PaymentStepWidget extends StatefulWidget {
 }
 
 class _PaymentStepWidgetState extends State<PaymentStepWidget> {
-  late final TextEditingController _holder;
-  late final TextEditingController _card;
-  late final TextEditingController _cvv;
+  late final TextEditingController _ref;
   late final CheckoutCubit _cubit;
 
   @override
@@ -21,25 +19,19 @@ class _PaymentStepWidgetState extends State<PaymentStepWidget> {
     super.initState();
     _cubit = context.read<CheckoutCubit>();
     final d = _cubit.data;
-    _holder = TextEditingController(text: d.cardHolderName);
-    _card = TextEditingController(text: d.cardNumber);
-    _cvv = TextEditingController(text: d.cvv);
+    _ref = TextEditingController(text: d.referenceNumber);
   }
 
   @override
   void dispose() {
     _saveData();
-    _holder.dispose();
-    _card.dispose();
-    _cvv.dispose();
+    _ref.dispose();
     super.dispose();
   }
 
   void _saveData() {
     final d = _cubit.data;
-    d.cardHolderName = _holder.text;
-    d.cardNumber = _card.text;
-    d.cvv = _cvv.text;
+    d.referenceNumber = _ref.text;
   }
 
   @override
@@ -49,38 +41,33 @@ class _PaymentStepWidgetState extends State<PaymentStepWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('أختار طريقة الدفع المناسبه :',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 15)),
+          const Text(
+            'أختار طريقة الدفع المناسبه :',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          ),
           const SizedBox(height: 4),
-          const Text('من فضلك اختر طريقة الدفع المناسبه لك.',
-              style: TextStyle(color: Colors.grey, fontSize: 12)),
+          const Text(
+            'من فضلك اختر طريقة الدفع المناسبه لك.',
+            style: TextStyle(color: Colors.grey, fontSize: 12),
+          ),
           const SizedBox(height: 16),
           PaymentMethodsRow(
             selected: context.watch<CheckoutCubit>().data.paymentMethod,
-            onSelect: (m) =>
-                context.read<CheckoutCubit>().setPaymentMethod(m),
+            onSelect: (m) => context.read<CheckoutCubit>().setPaymentMethod(m),
           ),
           const SizedBox(height: 20),
-          _field('اسم حامل البطاقة', _holder),
-          _field('رقم البطاقة', _card,
-              type: TextInputType.number),
-          _field('CVV', _cvv, type: TextInputType.number),
-          const SizedBox(height: 8),
-          _DefaultCardCheck(
-            value: context.watch<CheckoutCubit>().data.defaultCard,
-            onChanged: (v) {
-              _cubit.data.defaultCard = v;
-              _cubit.goToStep(_cubit.currentStep);
-            },
-          ),
+          const SizedBox(height: 20),
+          _field('الرقم المرجعي', _ref, type: TextInputType.number),
         ],
       ),
     );
   }
 
-  Widget _field(String hint, TextEditingController ctrl,
-      {TextInputType? type}) {
+  Widget _field(
+    String hint,
+    TextEditingController ctrl, {
+    TextInputType? type,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextField(
@@ -97,7 +84,9 @@ class _PaymentStepWidgetState extends State<PaymentStepWidget> {
             borderSide: BorderSide.none,
           ),
           contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16, vertical: 14),
+            horizontal: 16,
+            vertical: 14,
+          ),
         ),
       ),
     );
@@ -114,72 +103,59 @@ class PaymentMethodsRow extends StatelessWidget {
   });
 
   static const _methods = [
-    {'key': 'tabby', 'label': 'تابي'},
-    {'key': 'paypal', 'label': 'PayPal'},
-    {'key': 'mastercard', 'label': 'MC'},
-    {'key': 'visa', 'label': 'VISA'},
+    {'key': 'jawali', 'label': 'جوالي'},
+    {'key': 'Jaib', 'label': 'جيب'},
+    {'key': 'onecash', 'label': 'وان كاش'},
+    {'key': 'floosak', 'label': 'فلوسك'},
+    {'key': 'mahfathati', 'label': 'محفظتي'},
+    {'key': 'mobilemoney', 'label': 'موبايل موني'},
+    {'key': 'kuraimi', 'label': 'الكريمي'},
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
       children: _methods.map((m) {
         final isSelected = selected == m['key'];
-        return Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: GestureDetector(
-            onTap: () => onSelect(m['key']!),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: isSelected
-                      ? AppColors.primary
-                      : Colors.grey[300]!,
-                  width: isSelected ? 2 : 1,
-                ),
+        return GestureDetector(
+          onTap: () => onSelect(m['key']!),
+          child: Container(
+            width: (MediaQuery.of(context).size.width - 64) / 3, // 3 columns
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? AppColors.primary.withAlpha(20)
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected ? AppColors.primary : Colors.grey[300]!,
+                width: isSelected ? 1.5 : 1,
               ),
-              child: Text(m['label']!,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                    color: isSelected
-                        ? AppColors.primary
-                        : Colors.black54,
-                  )),
+              boxShadow: [
+                if (!isSelected)
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.05),
+                    spreadRadius: 1,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+              ],
+            ),
+            child: Text(
+              m['label']!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                color: isSelected ? AppColors.primary : Colors.black87,
+              ),
             ),
           ),
         );
       }).toList(),
-    );
-  }
-}
-
-class _DefaultCardCheck extends StatelessWidget {
-  final bool value;
-  final ValueChanged<bool> onChanged;
-  const _DefaultCardCheck({
-    required this.value,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        const Text('جعل البطاقة افتراضية',
-            style: TextStyle(fontSize: 13)),
-        Checkbox(
-          value: value,
-          activeColor: AppColors.primary,
-          onChanged: (v) => onChanged(v ?? false),
-        ),
-      ],
     );
   }
 }

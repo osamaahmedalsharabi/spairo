@@ -10,8 +10,13 @@ import 'package:sparioapp/feature/user_feature/home/presentation/view/widgets/ho
 
 class FilteredProductsView extends StatelessWidget {
   final String title;
+  final String? excludeProductId;
 
-  const FilteredProductsView({super.key, required this.title});
+  const FilteredProductsView({
+    super.key, 
+    required this.title,
+    this.excludeProductId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +42,11 @@ class FilteredProductsView extends StatelessWidget {
                       child: CircularProgressIndicator(color: AppColors.primary),
                     );
                   } else if (state is FilteredProductsSuccess) {
-                    if (state.products.isEmpty) {
+                    final displayProducts = excludeProductId != null 
+                        ? state.products.where((p) => p.id != excludeProductId).toList()
+                        : state.products;
+
+                    if (displayProducts.isEmpty) {
                       return const Center(child: Text('لا توجد منتجات'));
                     }
                     return GridView.builder(
@@ -48,10 +57,10 @@ class FilteredProductsView extends StatelessWidget {
                         crossAxisSpacing: 16,
                         childAspectRatio: 0.75,
                       ),
-                      itemCount: state.products.length,
+                      itemCount: displayProducts.length,
                       itemBuilder: (context, index) {
                         return ProductCardWidget(
-                          product: state.products[index],
+                          product: displayProducts[index],
                           onTap: () {
                             context.pushNamed(
                               AppRouteConst.productDetails,

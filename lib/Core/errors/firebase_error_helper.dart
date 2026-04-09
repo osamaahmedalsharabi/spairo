@@ -9,6 +9,9 @@ class FirebaseErrorHandler {
       return _handleAuthError(exception);
     } else if (exception is FirebaseException) {
       return _handleFirebaseError(exception);
+    } else if (exception is Exception) {
+      final msg = exception.toString().replaceFirst('Exception: ', '');
+      return msg;
     } else if (exception.toString().contains('firebase')) {
       return _handleGenericFirebaseError(exception.toString());
     } else {

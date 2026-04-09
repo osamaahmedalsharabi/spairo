@@ -11,22 +11,26 @@ class AuthRemoteDataSource {
   final FirebaseStorage storage;
   AuthRemoteDataSource(this.auth, this.db, this.storage);
 
-  Future<UserModel> login(String email, String pass,) async {
-    final cred = await auth.signInWithEmailAndPassword(
-      email: email,
-      password: pass,
-    );
-    final doc = await db.collection('users').doc(cred.user!.uid).get();
-
-    // if (doc.exists && doc.data()?['userType'] != userType) {
-    //   await auth.signOut();
-    //   throw FirebaseAuthException(
-    //     code: 'user-mismatch',
-    //     message: 'نوع الحساب المختار لا يتطابق مع نوع حسابك الفعلي',
-    //   );
-    // }
-
-    return UserModel.fromJson(doc.data()!, doc.id);
+  Future<UserModel> login(String email, String pass) async {
+    // 1. Find user by email in Firestore
+    final query = await db.collection('users')
+        .where('email', isEqualTo: email).get();
+    if (query.docs.isEmpty) {
+      throw Exception('البريد الإلكتروني غير مسجل');
+    }
+    // 2. Verify password from Firestore
+    final doc = query.docs.first;
+    final data = doc.data();
+    final storedPass = data['password'] ?? '';
+    if (storedPass != pass) {
+      throw Exception('كلمة المرور غير صحيحة');
+    }
+    // 3. Sign in with Firebase Auth for session
+    try {
+      await auth.signInWithEmailAndPassword(
+          email: email, password: storedPass);
+    } catch (_) {}
+    return UserModel.fromJson(data, doc.id);
   }
 
   Future<UserModel> register(UserEntity user, String pass, File? img) async {
@@ -50,7 +54,10 @@ class AuthRemoteDataSource {
       userType: user.userType,
       commercialRegisterImage: imgUrl,
     );
-    await db.collection('users').doc(cred.user!.uid).set(model.toJson());
+    await db.collection('users').doc(cred.user!.uid).set({
+      ...model.toJson(),
+      'password': pass,
+    });
     return model;
   }
 

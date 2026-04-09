@@ -10,8 +10,13 @@ import 'package:sparioapp/feature/user_feature/home/presentation/view/widgets/ho
 
 class PriceComparisonView extends StatelessWidget {
   final String categoryName;
+  final String? excludeProductId;
 
-  const PriceComparisonView({super.key, required this.categoryName});
+  const PriceComparisonView({
+    super.key,
+    required this.categoryName,
+    this.excludeProductId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +42,14 @@ class PriceComparisonView extends StatelessWidget {
                       child: CircularProgressIndicator(color: AppColors.primary),
                     );
                   } else if (state is FilteredProductsSuccess) {
-                    if (state.products.isEmpty) {
+                    // Sort locally by lowest price to highest and exclude the current product
+                    final filteredList = state.products.where((p) => p.id != excludeProductId).toList();
+                    
+                    if (filteredList.isEmpty) {
                       return const Center(child: Text('لا توجد منتجات مشابهة للمقارنة'));
                     }
-                    
-                    // Sort locally by lowest price to highest
-                    final sortedProducts = List.of(state.products)
+
+                    final sortedProducts = List.of(filteredList)
                       ..sort((a, b) => a.price.compareTo(b.price));
 
                     return GridView.builder(

@@ -7,6 +7,7 @@ class UserModel extends UserEntity {
     required super.email,
     required super.phone,
     required super.userType,
+    super.location,
     super.commercialRegisterImage,
     super.isActive,
     super.fcmToken,
@@ -22,6 +23,7 @@ class UserModel extends UserEntity {
       commercialRegisterImage: json['commercialRegisterImage'],
       isActive: json['is_active'] ?? false,
       fcmToken: json['fcmToken'],
+      location: json['location'],
     );
   }
 

@@ -9,10 +9,7 @@ class CheckoutData {
   String apartment;
   bool saveAddress;
   String? paymentMethod;
-  String cardHolderName;
-  String cardNumber;
-  String cvv;
-  bool defaultCard;
+  String referenceNumber;
 
   CheckoutData({
     this.shippingMethod,
@@ -23,10 +20,7 @@ class CheckoutData {
     this.apartment = '',
     this.saveAddress = false,
     this.paymentMethod,
-    this.cardHolderName = '',
-    this.cardNumber = '',
-    this.cvv = '',
-    this.defaultCard = false,
+    this.referenceNumber = '',
   });
 
   double get shippingCost =>

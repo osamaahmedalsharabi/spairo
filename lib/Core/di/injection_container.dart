@@ -34,6 +34,9 @@ import 'package:sparioapp/feature/user_feature/notifications/data/data_sources/n
 import 'package:sparioapp/feature/user_feature/notifications/data/repositories/notifications_repository.dart';
 import 'package:sparioapp/feature/user_feature/notifications/data/repositories/notifications_repository_impl.dart';
 import 'package:sparioapp/feature/user_feature/notifications/presentation/view_model/notifications_cubit.dart';
+import 'package:sparioapp/feature/user_feature/profile/data/repositories/profile_repository.dart';
+import 'package:sparioapp/feature/user_feature/profile/data/repositories/profile_repository_impl.dart';
+import 'package:sparioapp/feature/user_feature/profile/presentation/view_model/profile_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -58,7 +61,7 @@ Future<void> init() async {
       sl.get<AuthLocalDataSource>(),
     ),
   );
-  sl.registerLazySingleton(
+  sl.registerFactory(
     () => ManageProductCubit(repository: sl.get<ProductsRepo>()),
   );
   sl.registerFactory(() => SubmitOrderCubit(sl.get<PartOrderRepoImpl>()));
@@ -100,4 +103,8 @@ Future<void> init() async {
   // AI Image Search
   sl.registerLazySingleton(() => AiImageSearchService());
   sl.registerFactory(() => AiImageSearchCubit(sl(), sl.get<ProductsRepo>()));
+
+  // Profile
+  sl.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(sl.get<FirebaseFirestore>(), sl.get<FirebaseAuth>()));
+  sl.registerFactory(() => ProfileCubit(sl.get<ProfileRepository>()));
 }

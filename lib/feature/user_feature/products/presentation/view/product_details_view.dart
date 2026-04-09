@@ -582,8 +582,10 @@ class ProductDetailsView extends StatelessWidget {
                     AppRouteConst.filteredProductsView,
                     extra: {
                       'title': 'قطع متوافقة',
-                      'filterType': 'category',
-                      'filterValue': product.categoryName,
+                      'filterType': 'compatible',
+                      'carName': product.carName,
+                      'year': product.modelYear,
+                      'excludeProductId': product.id,
                     },
                   );
                 },

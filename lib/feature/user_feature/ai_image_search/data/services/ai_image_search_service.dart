@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class AiImageSearchService {
-  static const _apiKey = '';
+  static const _apiKey = 'AIzaSyDoDFwMOjXqgUdL1MFlMsZhkqbpNQVSC10';
 
   static const _systemPrompt = '''
 أنت خبير في قطع غيار السيارات.

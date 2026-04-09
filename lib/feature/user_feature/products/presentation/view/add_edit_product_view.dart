@@ -144,9 +144,26 @@ class _ProductFormState extends State<_ProductForm> {
   }
 
   void _showCarsBottomSheet() {
-    if (selectedBrand == null || selectedBrand!.id.isEmpty) {
+    if (selectedBrand == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('الرجاء اختيار الشركة أولاً')));
       return;
     }
+
+    if (selectedBrand!.id.isEmpty) {
+      final bState = context.read<GetBrandsCubit>().state;
+      if (bState is GetBrandsSuccess) {
+         try {
+           final realBrand = bState.brands.firstWhere((b) => b.name == selectedBrand!.name);
+           selectedBrand = realBrand;
+           context.read<GetBrandCarsCubit>().getBrandCars(realBrand.id);
+           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('جاري جلب سيارات الشركة، حاول النقر مجدداً بعد ثانية')));
+           return;
+         } catch(e) {}
+      }
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('يرجى إعادة اختيار الشركة من القائمة أولاً')));
+      return;
+    }
+
     final state = context.read<GetBrandCarsCubit>().state;
     if (state is GetBrandCarsSuccess) {
       showModalBottomSheet(
@@ -158,6 +175,9 @@ class _ProductFormState extends State<_ProductForm> {
           setState(() => selectedCar = val);
         }
       });
+    } else {
+      context.read<GetBrandCarsCubit>().getBrandCars(selectedBrand!.id);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('جاري التحميل، حاول مجدداً')));
     }
   }
 
@@ -272,6 +292,7 @@ class _ProductFormState extends State<_ProductForm> {
       condition: selectedCondition!,
       image: currentImageUrl ?? '',
       localImage: selectedImage,
+      isApproved: widget.product?.isApproved ?? false,
     );
 
     if (widget.product == null) {

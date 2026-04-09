@@ -35,6 +35,9 @@ import 'package:sparioapp/feature/user_feature/checkout/presentation/view/checko
 import 'package:sparioapp/feature/user_feature/part_order/presentation/view/orders_history/order_tracking_view.dart';
 import 'package:sparioapp/feature/user_feature/ai_chat/presentation/view/ai_chat_view.dart';
 import 'package:sparioapp/feature/user_feature/admin/presentation/view/admin_dashboard_view.dart';
+import 'package:sparioapp/feature/user_feature/profile/presentation/view/profile_view.dart';
+import 'package:sparioapp/feature/user_feature/profile/presentation/view_model/profile_cubit.dart';
+import 'package:sparioapp/feature/Authantication/domain/entities/user_entity.dart';
 
 import '../../feature/WelcomePages/Splash_Screen.dart';
 import '../../feature/WelcomePages/first_page.dart';
@@ -139,6 +142,22 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: '/${AppRouteConst.profile}',
+        name: AppRouteConst.profile,
+        pageBuilder: (context, state) {
+          final user = state.extra as UserEntity;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            transitionsBuilder: PageTransitions.slideFromLeft,
+            transitionDuration: const Duration(milliseconds: 500),
+            child: BlocProvider(
+              create: (context) => sl.get<ProfileCubit>(),
+              child: StatusBarWidget(child: ProfileView(user: user)),
+            ),
+          );
+        },
+      ),
+      GoRoute(
         path: '/${AppRouteConst.brandsView}',
         name: AppRouteConst.brandsView,
         pageBuilder: (context, state) => CustomTransitionPage(
@@ -188,7 +207,10 @@ class AppRouter {
             transitionsBuilder: PageTransitions.slideFromLeft,
             transitionDuration: const Duration(milliseconds: 500),
             child: StatusBarWidget(
-              child: CarYearSelectionView(brandName: brandName, carName: carName),
+              child: CarYearSelectionView(
+                brandName: brandName,
+                carName: carName,
+              ),
             ),
           );
         },
@@ -206,7 +228,8 @@ class AppRouter {
             transitionsBuilder: PageTransitions.slideFromLeft,
             transitionDuration: const Duration(milliseconds: 500),
             child: BlocProvider(
-              create: (context) => sl.get<GetCategoriesCubit>()..getCategories(),
+              create: (context) =>
+                  sl.get<GetCategoriesCubit>()..getCategories(),
               child: StatusBarWidget(
                 child: FilterCategorySelectionView(
                   brandName: brandName,
@@ -274,9 +297,7 @@ class AppRouter {
           transitionsBuilder: PageTransitions.slideFromLeft,
           transitionDuration: const Duration(milliseconds: 500),
           child: StatusBarWidget(
-            child: SupplierOrdersPage(
-              mode: OrdersMode.sent,
-            ),
+            child: SupplierOrdersPage(mode: OrdersMode.sent),
           ),
         ),
       ),
@@ -288,9 +309,7 @@ class AppRouter {
           transitionsBuilder: PageTransitions.slideFromLeft,
           transitionDuration: const Duration(milliseconds: 500),
           child: StatusBarWidget(
-            child: SupplierOrdersPage(
-              mode: OrdersMode.incoming,
-            ),
+            child: SupplierOrdersPage(mode: OrdersMode.incoming),
           ),
         ),
       ),
@@ -303,9 +322,7 @@ class AppRouter {
             key: state.pageKey,
             transitionsBuilder: PageTransitions.slideFromLeft,
             transitionDuration: const Duration(milliseconds: 500),
-            child: StatusBarWidget(
-              child: CheckoutView(order: order),
-            ),
+            child: StatusBarWidget(child: CheckoutView(order: order)),
           );
         },
       ),
@@ -318,9 +335,7 @@ class AppRouter {
             key: state.pageKey,
             transitionsBuilder: PageTransitions.slideFromLeft,
             transitionDuration: const Duration(milliseconds: 500),
-            child: StatusBarWidget(
-              child: OrderTrackingView(order: order),
-            ),
+            child: StatusBarWidget(child: OrderTrackingView(order: order)),
           );
         },
       ),
@@ -332,9 +347,7 @@ class AppRouter {
             key: state.pageKey,
             transitionsBuilder: PageTransitions.slideFromLeft,
             transitionDuration: const Duration(milliseconds: 500),
-            child: const StatusBarWidget(
-              child: AiChatView(),
-            ),
+            child: const StatusBarWidget(child: AiChatView()),
           );
         },
       ),
@@ -346,9 +359,7 @@ class AppRouter {
             key: state.pageKey,
             transitionsBuilder: PageTransitions.slideFromLeft,
             transitionDuration: const Duration(milliseconds: 500),
-            child: const StatusBarWidget(
-              child: AdminDashboardView(),
-            ),
+            child: const StatusBarWidget(child: AdminDashboardView()),
           );
         },
       ),
@@ -362,10 +373,18 @@ class AppRouter {
             transitionsBuilder: PageTransitions.slideFromLeft,
             transitionDuration: const Duration(milliseconds: 500),
             child: BlocProvider(
-              create: (context) => FilteredProductsCubit(sl.get<ProductsRepo>())
-                ..getProductsByCategory(product.categoryName),
+              create: (context) =>
+                  FilteredProductsCubit(sl.get<ProductsRepo>())
+                    ..getProductsByMultipleFilters(
+                      carName: product.carName,
+                      year: product.modelYear,
+                      categoryName: product.categoryName,
+                    ),
               child: StatusBarWidget(
-                child: PriceComparisonView(categoryName: product.categoryName),
+                child: PriceComparisonView(
+                  categoryName: product.categoryName,
+                  excludeProductId: product.id,
+                ),
               ),
             ),
           );
@@ -379,6 +398,7 @@ class AppRouter {
           final title = extra['title'] as String;
           final filterType = extra['filterType'] as String;
           final filterValue = extra['filterValue']?.toString() ?? '';
+          final excludeProductId = extra['excludeProductId'] as String?;
 
           return CustomTransitionPage(
             key: state.pageKey,
@@ -387,7 +407,12 @@ class AppRouter {
             child: BlocProvider(
               create: (context) {
                 final cubit = FilteredProductsCubit(sl.get<ProductsRepo>());
-                if (filterType == 'multi') {
+                if (filterType == 'compatible') {
+                  cubit.getCompatibleParts(
+                    carName: extra['carName'],
+                    year: extra['year'],
+                  );
+                } else if (filterType == 'multi') {
                   cubit.getProductsByMultipleFilters(
                     carName: extra['carName'],
                     year: extra['year'],
@@ -406,7 +431,12 @@ class AppRouter {
                 }
                 return cubit;
               },
-              child: StatusBarWidget(child: FilteredProductsView(title: title)),
+              child: StatusBarWidget(
+                child: FilteredProductsView(
+                  title: title,
+                  excludeProductId: excludeProductId,
+                ),
+              ),
             ),
           );
         },
@@ -418,7 +448,7 @@ class AppRouter {
           final extra = state.extra;
           String? initialQuery;
           List<String>? initialIds;
-          
+
           if (extra is String) {
             initialQuery = extra;
           } else if (extra is Map<String, dynamic>) {
@@ -444,7 +474,12 @@ class AppRouter {
                 ),
                 BlocProvider(create: (context) => sl.get<GetBrandCarsCubit>()),
               ],
-              child: StatusBarWidget(child: SearchProductsView(initialQuery: initialQuery, initialIds: initialIds)),
+              child: StatusBarWidget(
+                child: SearchProductsView(
+                  initialQuery: initialQuery,
+                  initialIds: initialIds,
+                ),
+              ),
             ),
           );
         },
